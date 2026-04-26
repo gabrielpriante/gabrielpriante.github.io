@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gabriel Penedo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #101010;
+      --bg-card: #181818;
+      --bg-card-hover: #1e1e1e;
+      --text: #e5e5e0;
+      --text-muted: #9a9a94;
+      --accent: #c4a45a;
+      --accent-dim: rgba(196, 164, 90, 0.1);
+      --accent-glow: rgba(196, 164, 90, 0.2);
+      --border: rgba(255, 255, 255, 0.06);
+      --border-hover: rgba(255, 255, 255, 0.12);
+      --serif: 'DM Serif Display', Georgia, serif;
+      --sans: 'Outfit', system-ui, sans-serif;
+      --mono: 'JetBrains Mono', monospace;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--sans);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+      font-weight: 300;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      pointer-events: none;
+      opacity: 0.025;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-size: 256px 256px;
+    }
+
+    .ambient {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(140px);
+      pointer-events: none;
+      z-index: 0;
+    }
+    .ambient--1 {
+      width: 500px; height: 500px;
+      background: rgba(196, 164, 90, 0.025);
+      top: -150px; right: -100px;
+    }
+    .ambient--2 {
+      width: 400px; height: 400px;
+      background: rgba(180, 180, 170, 0.02);
+      bottom: 30%; left: -120px;
+    }
+
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 0 28px;
+      position: relative;
+      z-index: 1;
+    }
+    section { padding: 80px 0; }
+
+    /* Nav */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      padding: 16px 0;
+      background: rgba(16, 16, 16, 0.88);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+    }
+    nav .container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .nav-logo {
+      font-family: var(--mono);
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--accent);
+      letter-spacing: 0.5px;
+    }
+    .nav-links {
+      display: flex;
+      gap: 32px;
+      list-style: none;
+    }
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 400;
+      letter-spacing: 0.4px;
+      text-transform: uppercase;
+      transition: color 0.3s;
+    }
+    .nav-links a:hover { color: var(--text); }
+
+    /* Hero */
+    .hero {
+      padding-top: 140px;
+      padding-bottom: 64px;
+    }
+    .hero__inner {
+      display: grid;
+      grid-template-columns: 1fr 260px;
+      gap: 48px;
+      align-items: center;
+    }
+    .hero__photo {
+      width: 260px;
+      height: 320px;
+      border-radius: 12px;
+      object-fit: cover;
+      object-position: center top;
+      border: 1px solid var(--border);
+      opacity: 0;
+      animation: fadeUp 0.8s ease forwards 0.5s;
+    }
+    .hero__label {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--text-muted);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+      opacity: 0;
+      animation: fadeUp 0.8s ease forwards 0.2s;
+    }
+    .hero h1 {
+      font-family: var(--serif);
+      font-size: clamp(2.6rem, 5.5vw, 3.8rem);
+      font-weight: 400;
+      line-height: 1.15;
+      margin-bottom: 24px;
+      opacity: 0;
+      animation: fadeUp 0.8s ease forwards 0.35s;
+    }
+    .hero__sub {
+      font-size: 16px;
+      color: var(--text-muted);
+      max-width: 520px;
+      line-height: 1.75;
+      margin-bottom: 32px;
+      opacity: 0;
+      animation: fadeUp 0.8s ease forwards 0.5s;
+    }
+    .hero__links {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      opacity: 0;
+      animation: fadeUp 0.8s ease forwards 0.65s;
+    }
+    .hero__links a {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 500;
+      text-decoration: none;
+      transition: all 0.3s;
+    }
+    .btn--primary {
+      background: var(--accent);
+      color: var(--bg);
+    }
+    .btn--primary:hover {
+      box-shadow: 0 0 20px var(--accent-glow);
+      transform: translateY(-1px);
+    }
+    .btn--ghost {
+      border: 1px solid var(--border-hover);
+      color: var(--text-muted);
+    }
+    .btn--ghost:hover {
+      border-color: var(--text-muted);
+      color: var(--text);
+    }
+
+    .section-label {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--accent);
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+    .section-title {
+      font-family: var(--serif);
+      font-size: clamp(1.8rem, 3.5vw, 2.4rem);
+      font-weight: 400;
+      margin-bottom: 48px;
+    }
+
+    /* Awards */
+    .awards {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 56px;
+    }
+    .award {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 18px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 400;
+      background: var(--accent-dim);
+      border: 1px solid rgba(196, 164, 90, 0.12);
+      color: var(--accent);
+    }
+
+    /* Projects */
+    .projects-grid { display: grid; gap: 20px; }
+    .project {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 32px;
+      transition: all 0.35s;
+      position: relative;
+      overflow: hidden;
+    }
+    .project::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+      opacity: 0;
+      transition: opacity 0.35s;
+    }
+    .project:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--border-hover);
+      transform: translateY(-2px);
+    }
+    .project:hover::before { opacity: 0.6; }
+    .project__header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 12px;
+    }
+    .project__title {
+      font-family: var(--serif);
+      font-size: 1.25rem;
+      font-weight: 400;
+    }
+    .project__links {
+      display: flex;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+    .project__links a {
+      color: var(--text-muted);
+      font-size: 12px;
+      font-family: var(--mono);
+      text-decoration: none;
+      padding: 3px 9px;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      transition: all 0.3s;
+    }
+    .project__links a:hover {
+      color: var(--text);
+      border-color: var(--border-hover);
+    }
+    .project__desc {
+      color: var(--text-muted);
+      font-size: 14px;
+      line-height: 1.7;
+      margin-bottom: 18px;
+    }
+    .project__tags { display: flex; flex-wrap: wrap; gap: 6px; }
+    .tag {
+      font-family: var(--mono);
+      font-size: 11px;
+      padding: 3px 9px;
+      border-radius: 3px;
+      background: rgba(255,255,255,0.03);
+      color: var(--text-muted);
+      letter-spacing: 0.3px;
+    }
+
+    /* Experience */
+    .exp-list { display: grid; gap: 28px; }
+    .exp {
+      display: grid;
+      grid-template-columns: 170px 1fr;
+      gap: 24px;
+      padding-bottom: 28px;
+      border-bottom: 1px solid var(--border);
+    }
+    .exp:last-child { border-bottom: none; padding-bottom: 0; }
+    .exp__date {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--text-muted);
+      padding-top: 3px;
+    }
+    .exp__role { font-weight: 600; font-size: 15px; margin-bottom: 3px; }
+    .exp__org { color: var(--accent); font-size: 13px; margin-bottom: 10px; }
+    .exp__desc { color: var(--text-muted); font-size: 14px; line-height: 1.7; }
+
+    /* Skills */
+    .skills-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 20px;
+    }
+    .skill-group {
+      padding: 24px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+    }
+    .skill-group__title {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--accent);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+    .skill-group__items {
+      color: var(--text-muted);
+      font-size: 13px;
+      line-height: 1.9;
+    }
+
+    /* Certs */
+    .certs-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+      gap: 16px;
+    }
+    .cert {
+      padding: 22px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      transition: border-color 0.3s;
+    }
+    .cert:hover { border-color: var(--border-hover); }
+    .cert__name { font-weight: 600; font-size: 14px; margin-bottom: 4px; }
+    .cert__issuer { font-size: 13px; color: var(--text-muted); }
+    .cert__date { font-family: var(--mono); font-size: 11px; color: var(--accent); margin-top: 8px; }
+
+    /* Education */
+    .edu-grid { display: grid; gap: 24px; }
+    .edu {
+      display: grid;
+      grid-template-columns: 170px 1fr;
+      gap: 24px;
+    }
+    .edu__year { font-family: var(--mono); font-size: 12px; color: var(--text-muted); padding-top: 3px; }
+    .edu__degree { font-weight: 600; font-size: 15px; margin-bottom: 2px; }
+    .edu__school { color: var(--accent); font-size: 13px; margin-bottom: 4px; }
+    .edu__detail { color: var(--text-muted); font-size: 13px; }
+
+    /* Footer */
+    footer {
+      padding: 48px 0;
+      border-top: 1px solid var(--border);
+      text-align: center;
+    }
+    .footer__links {
+      display: flex;
+      justify-content: center;
+      gap: 24px;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+    }
+    .footer__links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 13px;
+      transition: color 0.3s;
+    }
+    .footer__links a:hover { color: var(--text); }
+    .footer__copy { font-size: 12px; color: rgba(154, 154, 148, 0.4); }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .reveal {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    @media (max-width: 720px) {
+      .hero__inner {
+        grid-template-columns: 1fr;
+        text-align: center;
+      }
+      .hero__photo {
+        width: 200px;
+        height: 250px;
+        margin: 0 auto 8px;
+        order: -1;
+      }
+      .hero__sub { margin-left: auto; margin-right: auto; }
+      .hero__links { justify-content: center; }
+      .nav-links { gap: 16px; }
+      .nav-links a { font-size: 11px; }
+      section { padding: 56px 0; }
+      .hero { padding-top: 110px; }
+      .exp, .edu { grid-template-columns: 1fr; gap: 4px; }
+      .project { padding: 22px; }
+      .awards { flex-direction: column; align-items: center; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="ambient ambient--1"></div>
+<div class="ambient ambient--2"></div>
+
+<nav>
+  <div class="container">
+    <div class="nav-logo">gp.</div>
+    <ul class="nav-links">
+      <li><a href="#projects">Projects</a></li>
+      <li><a href="#experience">Experience</a></li>
+      <li><a href="#skills">Skills</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="container">
+    <div class="hero__inner">
+      <div>
+        <p class="hero__label">Environmental Economist · Data Scientist · GIS Analyst</p>
+        <h1>Gabriel Penedo</h1>
+        <p class="hero__sub">
+          I use econometrics, machine learning, and geospatial analysis to make environmental and economic data actionable. Building data infrastructure for environmental organizations in Pittsburgh and publishing original research on green finance and climate policy.
+        </p>
+        <div class="hero__links">
+          <a href="https://enviroecon.com/" class="btn--primary" target="_blank">EnviroEcon.com</a>
+          <a href="https://www.linkedin.com/in/gpps" class="btn--ghost" target="_blank">LinkedIn</a>
+          <a href="https://github.com/gabrielpriante" class="btn--ghost" target="_blank">GitHub</a>
+        </div>
+      </div>
+      <img src="github_pages.jpeg" alt="Gabriel Penedo" class="hero__photo">
+    </div>
+  </div>
+</section>
+
+<section style="padding-top:0; padding-bottom:32px;">
+  <div class="container">
+    <div class="awards reveal">
+      <div class="award">2026 Pitt Sustainability Champion</div>
+      <div class="award">LEED Green Associate</div>
+    </div>
+  </div>
+</section>
+
+<section id="projects">
+  <div class="container">
+    <p class="section-label reveal">Selected Work</p>
+    <h2 class="section-title reveal">Projects</h2>
+
+    <div class="projects-grid">
+
+      <div class="project reveal">
+        <div class="project__header">
+          <h3 class="project__title">Global Green Bond Tracker</h3>
+          <div class="project__links">
+            <a href="https://github.com/gabrielpriante/green-bond-tracker-project" target="_blank">repo</a>
+            <a href="https://arcg.is/8D4mP0" target="_blank">live map</a>
+          </div>
+        </div>
+        <p class="project__desc">
+          Interactive ArcGIS web map tracking green bond issuance across 114 countries, overlaid with the carbon footprint of bank lending portfolios. Merges four international datasets — World Bank, IMF, LSEG, and Climate Bonds Initiative — through a reproducible R pipeline into a single map-ready layer.
+        </p>
+        <div class="project__tags">
+          <span class="tag">R</span>
+          <span class="tag">tidyverse</span>
+          <span class="tag">ArcGIS Pro</span>
+          <span class="tag">ArcGIS Online</span>
+          <span class="tag">RMarkdown</span>
+        </div>
+      </div>
+
+      <div class="project reveal">
+        <div class="project__header">
+          <h3 class="project__title">Program Health Dashboard</h3>
+          <div class="project__links">
+            <a href="https://github.com/gabrielpriante/MQE-Capstone" target="_blank">repo</a>
+          </div>
+        </div>
+        <p class="project__desc">
+          Config-driven scoring dashboard built as my MQE capstone. Scores and ranks academic programs across demand, institutional, and financial domains using BLS projections, IPEDS data, and internal metrics. YAML config drives a Python pipeline that outputs JSON consumed by an R Shiny frontend — either side can be replaced independently.
+        </p>
+        <div class="project__tags">
+          <span class="tag">R Shiny</span>
+          <span class="tag">Python</span>
+          <span class="tag">YAML</span>
+          <span class="tag">plotly</span>
+          <span class="tag">bslib</span>
+        </div>
+      </div>
+
+      <div class="project reveal">
+        <div class="project__header">
+          <h3 class="project__title">LEED, Justice 40 &amp; Frontline Orgs — Spatial Analysis</h3>
+          <div class="project__links">
+            <a href="https://github.com/gabrielpriante/gis_spatial_analysis" target="_blank">repo</a>
+          </div>
+        </div>
+        <p class="project__desc">
+          Spatial analysis quantifying overlap between LEED-certified buildings, Justice 40 neighborhoods, vacant lots, and frontline organizations in Pittsburgh. Found that only 19% of LEED buildings sit within Justice 40 areas, with Mon Valley communities significantly more isolated from green building infrastructure.
+        </p>
+        <div class="project__tags">
+          <span class="tag">R</span>
+          <span class="tag">sf</span>
+          <span class="tag">ggplot2</span>
+          <span class="tag">ArcGIS REST API</span>
+        </div>
+      </div>
+
+      <div class="project reveal">
+        <div class="project__header">
+          <h3 class="project__title">EnviroEcon.com</h3>
+          <div class="project__links">
+            <a href="https://enviroecon.com/" target="_blank">site</a>
+          </div>
+        </div>
+        <p class="project__desc">
+          Weekly publication analyzing the intersection of economics and environmental policy. Translates complex research into actionable insights on green finance, carbon markets, infrastructure investment, and sustainable business practices.
+        </p>
+        <div class="project__tags">
+          <span class="tag">Economics</span>
+          <span class="tag">Environmental Policy</span>
+          <span class="tag">Publishing</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<section id="experience">
+  <div class="container">
+    <p class="section-label reveal">Career</p>
+    <h2 class="section-title reveal">Experience</h2>
+
+    <div class="exp-list">
+
+      <div class="exp reveal">
+        <div class="exp__date">Apr 2026 — Present</div>
+        <div>
+          <div class="exp__role">GIS Analyst Intern</div>
+          <div class="exp__org">UpstreamPGH · Pittsburgh, PA</div>
+          <p class="exp__desc">Pulling public environmental data and applying multivariate methods to simulate suitability models. Implementing cGAN research combined with GLMs for explainable results. Established Git workflow across the data science department.</p>
+        </div>
+      </div>
+
+      <div class="exp reveal">
+        <div class="exp__date">Dec 2025 — Present</div>
+        <div>
+          <div class="exp__role">Applied Data Scientist & Project Lead</div>
+          <div class="exp__org">Frontline Gig · Pittsburgh, PA</div>
+          <p class="exp__desc">Leading drone-based environmental data collection and partnering on a multi-million dollar PennDOT project. Built ML algorithms for inspection site detection. Established three cross-sector partnerships spanning academia, green construction, and environmental policy.</p>
+        </div>
+      </div>
+
+      <div class="exp reveal">
+        <div class="exp__date">Jan 2026 — Present</div>
+        <div>
+          <div class="exp__role">Data Consultant</div>
+          <div class="exp__org">University of Pittsburgh SHRS · Pittsburgh, PA</div>
+          <p class="exp__desc">Built the organization's first data-driven decision-making system. End-to-end dashboard combining external, internal, and derived datasets with UI optimized directly for stakeholder needs.</p>
+        </div>
+      </div>
+
+      <div class="exp reveal">
+        <div class="exp__date">Jun 2025 — Present</div>
+        <div>
+          <div class="exp__role">Founder</div>
+          <div class="exp__org">Priante LLC / EnviroEcon.com · Remote</div>
+          <p class="exp__desc">Founded an environmental sustainability organization and built EnviroEcon.com as its primary publication. Weekly articles analyzing the intersection of economics and environmental policy.</p>
+        </div>
+      </div>
+
+      <div class="exp reveal">
+        <div class="exp__date">Jul 2024 — Feb 2025</div>
+        <div>
+          <div class="exp__role">Area Manager</div>
+          <div class="exp__org">Amazon · Sacramento, CA</div>
+          <p class="exp__desc">Managed 50+ direct reports using daily performance metrics. Collaborated with senior leadership on operational best practices. Received a return offer based on performance and leadership.</p>
+        </div>
+      </div>
+
+      <div class="exp reveal">
+        <div class="exp__date">Aug — Dec 2022</div>
+        <div>
+          <div class="exp__role">Undergraduate Teaching Assistant</div>
+          <div class="exp__org">University of Pittsburgh · Pittsburgh, PA</div>
+          <p class="exp__desc">Taught two sections of Differential Equations and Linear Algebra to 70+ students. Conducted lectures three times per week and developed supplementary instructional materials.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<section id="skills">
+  <div class="container">
+    <p class="section-label reveal">Toolkit</p>
+    <h2 class="section-title reveal">Skills</h2>
+
+    <div class="skills-grid">
+      <div class="skill-group reveal">
+        <div class="skill-group__title">Languages</div>
+        <div class="skill-group__items">Python · R · C++ · SQL · C · HTML · CSS</div>
+      </div>
+      <div class="skill-group reveal">
+        <div class="skill-group__title">Geospatial</div>
+        <div class="skill-group__items">ArcGIS Pro/Online · ModelBuilder · StoryMaps · OpenDroneMap · DeepForest · GeoPandas · sf</div>
+      </div>
+      <div class="skill-group reveal">
+        <div class="skill-group__title">Data & ML</div>
+        <div class="skill-group__items">Tableau · Jupyter · pandas · tidyverse · plotly · Shiny · scikit-learn · ggplot2</div>
+      </div>
+      <div class="skill-group reveal">
+        <div class="skill-group__title">Cloud & DevOps</div>
+        <div class="skill-group__items">AWS · Azure · Git · GitHub</div>
+      </div>
+      <div class="skill-group reveal">
+        <div class="skill-group__title">Other</div>
+        <div class="skill-group__items">LLM Integration · API Development · YAML Config Architecture · Microsoft Excel · Portuguese (Fluent)</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <p class="section-label reveal">Credentials</p>
+    <h2 class="section-title reveal">Certifications</h2>
+
+    <div class="certs-grid">
+      <div class="cert reveal">
+        <div class="cert__name">LEED Green Associate</div>
+        <div class="cert__issuer">U.S. Green Building Council</div>
+        <div class="cert__date">March 2026</div>
+      </div>
+      <div class="cert reveal">
+        <div class="cert__name">Google Advanced Data Analytics</div>
+        <div class="cert__issuer">Coursera</div>
+        <div class="cert__date">January 2025</div>
+      </div>
+      <div class="cert reveal">
+        <div class="cert__name">FAA Part 107 Remote Pilot</div>
+        <div class="cert__issuer">Federal Aviation Administration</div>
+        <div class="cert__date">May 2026</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <p class="section-label reveal">Education</p>
+    <h2 class="section-title reveal">University of Pittsburgh</h2>
+
+    <div class="edu-grid">
+      <div class="edu reveal">
+        <div class="edu__year">May 2026</div>
+        <div>
+          <div class="edu__degree">M.S. Quantitative Economics</div>
+          <div class="edu__school">Dietrich School of Arts and Sciences</div>
+          <div class="edu__detail">GPA: 3.50</div>
+        </div>
+      </div>
+      <div class="edu reveal">
+        <div class="edu__year">April 2024</div>
+        <div>
+          <div class="edu__degree">B.S. Economics</div>
+          <div class="edu__school">Dietrich School of Arts and Sciences</div>
+          <div class="edu__detail">Major GPA: 3.70</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer id="contact">
+  <div class="container">
+    <div class="footer__links">
+      <a href="mailto:gps26@pitt.edu">gps26@pitt.edu</a>
+      <a href="tel:+17179255917">(717) 925-5917</a>
+      <a href="https://www.linkedin.com/in/gpps" target="_blank">LinkedIn</a>
+      <a href="https://github.com/gabrielpriante" target="_blank">GitHub</a>
+      <a href="https://enviroecon.com/" target="_blank">EnviroEcon</a>
+    </div>
+    <p class="footer__copy">&copy; 2026 Gabriel Penedo</p>
+  </div>
+</footer>
+
+<script>
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        observer.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+
+</body>
+</html>
